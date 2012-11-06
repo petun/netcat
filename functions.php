@@ -39,28 +39,3 @@ function _get_rus_month($num) {
     );
     return $months[$num];
 }
-
-
-
-
-/*private function unix_date($ctime = "", $format = "%d %B %Y, %H:%M") {
-    $ctime = empty($ctime) ? time() : $ctime;
-
-    // добаялем тег для обработки и замены в будущем
-    $format = str_replace('%B','--%m--',$format);
-    // формируем время
-    $r = strftime($format,$ctime);
-    // заменяем месяц на русское название
-    $r = preg_replace_callback("/--(\d{1,2})--/",array($this,'get_rus_month'),$r);
-
-    return $r;
-}
-
-private function mysql_date($ctime,$format = "%d %B %Y, %H:%M") {
-    $r = strtotime ($ctime);
-    if ($r) {
-        return $this->unix_date($r,$format);
-    } else {
-        return false;
-    }
-}*/
