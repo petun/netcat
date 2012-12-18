@@ -90,26 +90,33 @@ function p_title() {
  */
 function p_sub($id,$field = "") {
     global $nc_core;
-    return $nc_core->subdivision->get_by_id($id,$field);
+    global $sub;
+    global $current_sub;
+    
+    if ($id == $sub) {
+        return (!empty($field) ? $current_sub[$field] : $current_sub);
+    } else {
+        return $nc_core->subdivision->get_by_id($id,$field);  
+    }
 }
 
 /**
  * Quick get link for sub
  */
 function p_sub_link($id) {
-    return p_sub($id,'Hidden_URL');
+    $sub = p_sub($id);
+       
+    if (!empty($sub['ExternalURL'])){
+        return $sub['ExternalURL'];
+    } else {
+        return $sub['Hidden_URL'];
+    }    
 }
 
 /**
  * Quick get title for sub
  */
-function p_sub_title($id) {
-    global $sub;
-    global $current_sub;
-    
-    if ($sub == $id) {
-        return  $current_sub['Subdivision_Name'];
-    }
+function p_sub_title($id) {    
     return p_sub($id,'Subdivision_Name');
 }
 
