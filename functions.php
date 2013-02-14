@@ -121,15 +121,27 @@ function p_sub_title($id) {
 }
 
 
-function p_cc_title($cc) {
+function p_cc($cc,$field = "") {
     global $current_cc;
     global $nc_core;
     
     if ($current_cc['Sub_Class_ID'] == $cc) {
-        return $current_cc['Sub_Class_Name'];
+        return empty($field) ? $current_cc : $current_cc[$field];
     } else {
-        return $nc_core->sub_class->get_by_id($cc,'Sub_Class_Name');
+        return $nc_core->sub_class->get_by_id($cc,$field);
     }
+    
+}
+
+function p_cc_title($cc) {    
+    return p_cc($cc,'Sub_Class_Name');
+}
+
+function p_cc_link($cc) {
+    $sub = p_cc($cc, 'Subdivision_ID');    
+    $link = p_cc($cc, 'EnglishName');
+    
+    return p_sub_link($sub).$link.'.html';
 }
 
 /**
@@ -155,6 +167,16 @@ function p_resize($field,$size_x,$size_y,$crop = 0,$quality = 95) {
 
 
 /**
+ * Resize with phpthumb.. 
+ * phpThumb должен находиться в папке /phpthumb/phpThumb.php
+ * Возращает ссылку на картинку с учетом ресайза
+ */
+function p_thumb($image_link,$params) {
+    return '/phpthumb/phpThumb.php?src='.$image_link.$params;
+}
+
+
+/**
  * Log str to regular file
  */
 function p_log($str) {
@@ -167,8 +189,9 @@ function p_log($str) {
 /**
  * Возращает массив с дочерними разделами.
  * если указана $field - возражает одномерный массив с колонкой (напр. Subdivision_ID) 
+ * ДОБИТЬ WHERE!!! - пока не работает
  */
-function p_sub_childs($csub,$field = "") {
+function p_sub_childs($csub,$field = "",$where = "") {
     global $db;
     global $sub;
     
@@ -184,6 +207,19 @@ function p_sub_childs($csub,$field = "") {
     }    
         
 }
+
+function p_sub_all_childs($parent_sub,&$ida,$where = "") {           
+      $subs = p_sub_childs($parent_sub,"Subdivision_ID",$where); 
+      if ($subs) { 
+          foreach ($subs as $s) { 
+              $ida[] = $s; 
+              p_sub_all_childs($s['Subdivision_ID'], $ida); 
+          } 
+           
+      } else { 
+          return false; 
+      }
+  } 
 
 function p_sub_child_count($csub = null) {
     global $db;
@@ -231,6 +267,26 @@ function p_human_size($size) {
     }
     
     return round($size) . ' ' . $units[$i];
+}
+
+
+function p_human_price($price) {
+    return str_replace(',', ' ', number_format($price));
+}
+
+function p_human_decl($digit, $variants,$onlyWord = false) {    
+    
+    $i = $onlyWord  ? '' : $digit . ' ';
+    
+    if ($digit >= 5 && $digit <= 20) {            
+        $res = $i . $variants[2];            
+    } else {
+        $digit = $digit % 10;
+        if($digit == 1) {$res = $i . $variants[0];}
+        else if($digit >=2 && $digit <=4) {$res = $i . $variants[1];}
+        else  {$res = $i . $variants[2];}
+    }        
+    return $res;
 }
 
 function p_file_ext($file_name) {
