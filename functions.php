@@ -53,7 +53,7 @@ function _get_rus_month($num) {
 
 function _get_rus_day($num) {
     $days = array('Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье');
-    return $days[ (int)$num + 1 ];
+    return $days[ $num[1]*1 - 1 ];
 }
 
 /**
