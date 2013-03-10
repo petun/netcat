@@ -2,7 +2,7 @@
 /**
  * Русская дата, включая день недели - %B - месяц, %A - день недели
  */
-function p_date($ctime = "", $format = "%d %B %Y, %H:%M") {
+function p_date($ctime = "", $format = "%d %B %Y, %H:%M",$lower_case = false) {
 
     $ctime = empty($ctime) ? time() : $ctime;
 
@@ -25,6 +25,11 @@ function p_date($ctime = "", $format = "%d %B %Y, %H:%M") {
 
     // заменяем название дня недели на русское название
     $r = preg_replace_callback("/\+\+(\d{1,2})\+\+/",'_get_rus_day',$r);
+    
+    
+    if ($lower_case) {
+        $r = mb_strtolower($r);
+    }
 
     return $r;
 
