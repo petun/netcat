@@ -16,11 +16,11 @@ class pBucket {
    // get data or create one in pbucket table
    $st =  $this->db->get_var("SELECT data FROM pbucket WHERE pbucketid ='". $this->pbucketid."'");
    if ($st) {
-     p_log("id exists. serialize data");
+     //p_log("id exists. serialize data");
     
      $this->storage = unserialize($st);
    } else { 
-      p_log("create new record");
+      //p_log("create new record");
       $this->db->query("INSERT INTO pbucket( pbucketid,data )  VALUES ('".$this->pbucketid."', '".serialize($this->storage)."' )");
    }
    
@@ -33,7 +33,7 @@ public function __destruct() {
   // flush to db
   $this->db->query("UPDATE pbucket SET data = '".serialize($this->storage)."' WHERE pbucketid = '".$this->pbucketid."'");
   
-  p_log("flush bucket to db");
+  //p_log("flush bucket to db");
 }
 
 
@@ -43,18 +43,18 @@ private function process_request() {
     if (intval($_REQUEST['pb_id'])) {
       $cnt = intval($_REQUEST['pb_count']) ?  intval($_REQUEST['pb_count']) : 1;
       
-      p_log("add item to bucket - ".$_REQUEST['pb_id']) . 'count: '. $cnt;
+      //p_log("add item to bucket - ".$_REQUEST['pb_id']) . 'count: '. $cnt;
       
       $this->add(intval($_REQUEST['pb_id']),$cnt);
     }  
   } else if ($_REQUEST['pb_action'] == 'remove') {
     if (!empty($_REQUEST['pb_id'])) {
-        p_log('delete item form bucket');
+        //p_log('delete item form bucket');
         $this->remove($_REQUEST['pb_id']);
     }
   } else if ($_REQUEST['pb_action'] == 'recount') {
     if (!empty($_REQUEST['pb_id']) && is_array($_REQUEST['pb_id'])) {
-      p_log('recount');
+      //p_log('recount');
       
       // clear all bucket
       $this->clear();
@@ -70,7 +70,7 @@ private function process_request() {
   
   
   
-  p_log('bucket is '.print_r($this->storage,true));
+  //p_log('bucket is '.print_r($this->storage,true));
   
 }
 
@@ -88,6 +88,10 @@ public function clear() {
 
 public function get(){
   return $this->storage;
+}
+
+public function get_count($id) {
+  return array_key_exists($id, $this->storage) ?  $this->storage[$id] : 0;
 }
 
 /**

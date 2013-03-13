@@ -9,7 +9,10 @@ class pBucketInfo {
     private $db;
     private $classID;
     
-    public function __construct(pBucket $bucket,$classID) {
+    private $fName;
+    private $fPrice;
+    
+    public function __construct(pBucket $bucket,$classID,$field_map = array('name'=>'Name','price'=>'Price')) {
         global $nc_core;
         
         $this->b = $bucket;
@@ -18,22 +21,25 @@ class pBucketInfo {
         
         $this->classID = $classID;
         
+        $this->fName = $field_map['name'];
+        $this->fPrice = $field_map['price'];
+        
         
     }
     
     /**
-    * тут жестко забиты Name и Price.. поправить    
+    * 
     */ 
     public function items() {
         if (!empty($this->bucket_items))    {
-             $ids = $this->db->get_results("SELECT Message_ID,Name,Price FROM Message".$this->classID." WHERE Message_ID IN (".implode(',',array_keys($this->bucket_items) ).")",ARRAY_A);
+             $ids = $this->db->get_results("SELECT Message_ID,".$this->fName.",".$this->fPrice." FROM Message".$this->classID." WHERE Message_ID IN (".implode(',',array_keys($this->bucket_items) ).")",ARRAY_A);
              foreach ($ids as $el) {
-                $item_total_sum  =   $el['Price'] * $this->bucket_items[$el['Message_ID']];
+                $item_total_sum  =   $el[$this->fPrice] * $this->bucket_items[$el['Message_ID']];
                 
                 $this->full_items[] = array(
                                             'id'=> $el['Message_ID']
-                                            ,'price'=> $el['Price']
-                                            ,'name'=> $el['Name']
+                                            ,'price'=> $el[$this->fPrice]
+                                            ,'name'=> $el[$this->fName]
                                             ,'count'=> $this->bucket_items[$el['Message_ID']]
                                             ,'total_sum'=> $item_total_sum
                                             ,'link'=> nc_message_link ($el['Message_ID'],$this->classID)

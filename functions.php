@@ -175,6 +175,8 @@ function p_resize($field,$size_x,$size_y,$crop = 0,$quality = 95) {
  * Resize with phpthumb.. 
  * phpThumb должен находиться в папке /phpthumb/phpThumb.php
  * Возращает ссылку на картинку с учетом ресайза
+ * &w=100&h=100&zc=1&q=95
+ * &w=800&h=800&q=95&zc=0&aoe=0&far=0
  */
 function p_thumb($image_link,$params) {
     return '/phpthumb/phpThumb.php?src='.$image_link.$params;
@@ -292,6 +294,23 @@ function p_human_decl($digit, $variants,$onlyWord = false) {
         else  {$res = $i . $variants[2];}
     }        
     return $res;
+}
+
+/**
+* Функция для формирования массива из выборки.. 1 - столбец = ключ, 2 - значение ключа
+**/
+function p_db_options($query) {
+    global $db;
+    $result = array();
+    
+    $items = $db->get_results($query,ARRAY_N);
+    if ($items) {
+        foreach ($items as $item) {
+            $result[$item[0]] = $item[1];
+        }
+    }
+    
+    return $result;
 }
 
 function p_file_ext($file_name) {
