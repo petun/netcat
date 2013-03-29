@@ -12,19 +12,42 @@ class pBanner {
 
 	public function rotate($area_id) {
 		global $nc_core;
+		global $sub;
 
-		$query = "SELECT Message_ID FROM ".$this->table." WHERE  Area = ".$area_id." ORDER By RAND() LIMIT 1";
-		p_log("Rotate ".$area_id. " ".$query);
-
-		$id = $nc_core->db->get_var($query);
-		if ($id) {
-
-			$banner = $this->get_banner($id);
-			$file = nc_file_path($this->class_id,$id,'File');
-			p_log( "<a href='/netcat/modules/default/petun/banners/go.php?id=".$id."' target='_blank'><img src='".$file."' alt='' /></a>");
+		$query = "SELECT * FROM ".$this->table." WHERE  Area = ".$area_id." ORDER By RAND()";
+		
+		$all_banners = $nc_core->db->get_results($query,ARRAY_A);
 
 
-			return "<a href='/netcat/modules/default/petun/banners/go.php?id=".$id."' target='_blank'><img src='".$file."' alt='' /></a>";
+		$banner = false;
+		if ($all_banners) {
+			foreach ($all_banners as $b) {
+//print_r($b);
+				if (empty($b['inSub'])) {
+					$banner = $b;
+				} else {
+					$ids = explode(',',$b['inSub']);
+					$ids = array_map('trim',$ids);
+//print_r($ids);
+					if (in_array($sub,$ids)) {
+						$banner = $b;
+					}
+
+				}
+				if ($banner) {break;}
+			}
+		}
+
+
+
+//		$id = $nc_core->db->get_var($query);
+
+
+		if ($banner) {
+			$file = nc_file_path($this->class_id,$banner['Message_ID'],'File');
+			$blank = $banner['inNewPage'] ? "target='_blank'" : NULL;
+
+			return "<a href='/netcat/modules/default/petun/banners/go.php?id=".$banner['Message_ID']."' $blank><img src='".$file."' alt='' /></a>";
 
 		}
 
