@@ -1,5 +1,13 @@
 <?
 
+/**
+* ID http://weather.yahoo.com/
+* http://weather.yahoo.com/russia/nizhny-novgorod-oblast/vyksa-2124390/ - Vyksa
+* http://weather.yahoo.com/russia/tsentralniy-federalniy-okrug/moscow-2122265/
+* http://weather.yahoo.com/russia/uralskiy-federalniy-okrug/chelyabinsk-1997422/
+* 2049384 - Nab Chelny
+**/
+
 
 class pWeather {
 
@@ -7,11 +15,15 @@ class pWeather {
 	private $_cacheDir;
 	private $_w;
 	private $_cacheFile;
+	private $_city;
 	//private $_imgDir;
 
 	private $_wind;
 	private $_tempreture;	
 	private $_condition;
+
+	private $_filePath;
+	private $_urlPath;
 
 	const CACHE_TIME = 3600;
 
@@ -19,6 +31,10 @@ class pWeather {
 		$this->_w = $w;
 		$this->_link = "http://weather.yahooapis.com/forecastrss?w=".$w."&u=c";
 		$this->_cacheDir = dirname(__FILE__).'/cache/';
+		$this->_filePath = dirname(__FILE__).'/images/';
+
+		$this->_urlPath = 'images/';
+
 		
 		$this->_cacheFile = $this->_cacheDir . $this->_w . '.xml';
 
@@ -42,6 +58,9 @@ class pWeather {
 
 			//$this->condition_text = strtolower((string)$tmp['text']);
 
+			$location = $xml->xpath('/rss/channel/yweather:location');
+			$this->_city = (string)$location[0]['city'];
+			
 		}
 
 
@@ -50,7 +69,7 @@ class pWeather {
 	private function _getRss() {
 		if (file_exists($this->_cacheFile)) {			
 			if ( (time() - filemtime($this->_cacheFile)) < self::CACHE_TIME) {
-				return file_get_contents($this->_cacheFile);
+				return @file_get_contents($this->_cacheFile);
 			}
 		}
 
@@ -58,14 +77,14 @@ class pWeather {
 	}
 
 	private function _updateCache() {
-		$xml_contents = file_get_contents($this->_link);
+		$xml_contents = @file_get_contents($this->_link);
 		if ($xml_contents) {		
 			file_put_contents($this->_cacheFile , $xml_contents);
 			return $xml_contents;
 		}
 	}
 
-	public function getConditionName() {
+	public function getConditionName($asImage = false) {
 		$cond = array(
 			0 => 'торнадо'
 			,1 => 'тропический шторм'
@@ -101,7 +120,7 @@ class pWeather {
 			,31 => 'ясно'
 			,32 => 'солнечно'
 			,33 => 'fair (night)'
-			,34 => 'fair (day)'
+			,34 => 'ясно'
 			,35 => 'дождь с градом'
 			,36 => 'жарко'
 			,37 => 'местами грозы'
@@ -118,7 +137,12 @@ class pWeather {
 			,3200 => 'недоступно'
 			);
 
-		return $cond[$this->getCondition()];
+		if ($asImage) {
+			return $this->_urlPath . $this->getCondition() . '.png';
+		} else {
+			return $cond[$this->getCondition()];	
+		}
+		
 	}
 
 	public function getWind() {
@@ -131,11 +155,21 @@ class pWeather {
 	}
 
 	public function getTemp() {
-		return $this->_tempreture;
+		$prefix = '';
+		if ($this->_tempreture > 0) {
+			$prefix =  '+';
+		} else if ($this->_tempreture < 0) {
+			$prefix = '-';
+		}
+		return $prefix . $this->_tempreture;
 	}	
 
 	public function getCondition() {
 		return $this->_condition;
+	}
+
+	public function getCity() {
+		return $this->_city;
 	}
 
 
