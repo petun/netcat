@@ -257,6 +257,21 @@ JOIN
  ");
 }
 
+
+/**
+* Возращает список по его идентификатору.. Массив вида id=>value
+*/
+function p_list($list) {
+    global $db;
+
+    $name = 'Classificator_'.$list;
+    $field_id = $list.'_ID';
+    $field_value = $list.'_Name';
+    $field_order = $list.'_Priority';
+
+    return $db->get_results("SELECT  $field_id as id,$field_value as value FROM $name ORDER BY $field_order",ARRAY_A);    
+}
+
 function p_catalogue_title() {
     global $current_catalogue;
     return $current_catalogue['Catalogue_Name'];
