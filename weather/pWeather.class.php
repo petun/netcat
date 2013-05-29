@@ -5,7 +5,7 @@
 * http://weather.yahoo.com/russia/nizhny-novgorod-oblast/vyksa-2124390/ - Vyksa
 * http://weather.yahoo.com/russia/tsentralniy-federalniy-okrug/moscow-2122265/
 * http://weather.yahoo.com/russia/uralskiy-federalniy-okrug/chelyabinsk-1997422/
-* 2049384 - Nab Chelny
+* 2049384 - Nab Chelny 1
 **/
 
 
