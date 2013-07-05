@@ -270,7 +270,15 @@ function p_list($list) {
     $field_value = $list.'_Name';
     $field_order = $list.'_Priority';
 
-    return $db->get_results("SELECT  $field_id as id,$field_value as value FROM $name ORDER BY $field_order",ARRAY_A);    
+    $r = array();
+    $rows =  $db->get_results("SELECT  $field_id as id,$field_value as value FROM $name ORDER BY $field_order",ARRAY_A);    
+    if (is_array($r)) {
+        foreach ($rows as $row) {
+            $r[$row['id']] = $row['value'];
+        }
+    }
+
+    return $r;
 }
 
 function p_catalogue_title() {
