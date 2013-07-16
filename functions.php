@@ -170,6 +170,25 @@ function p_resize($field,$size_x,$size_y,$crop = 0,$quality = 95) {
     }
 }
 
+/**
+ * Создает превьюшку из другого поля. 
+ * $sourceField - имя поля большой картинки
+ * $destField - имя поля результирующей
+ * Функция вызывается ТОЛЬКО из Действия после добавления - изменения. Вызывается после вызова p_resize.
+ * $mode - 1 - crop
+*/
+function p_resize_thumb($sourceField,$destField,$width, $height, $mode = 0 , $format='jpg', $quality = 95) {
+    global $nc_core;
+    p_log('p_resize_thumb call'); 
+
+      // если грузится файл...      
+    if ($_FILES['f_'.$sourceField]) {
+        p_log('p_resize_thumb resize'); 
+        require_once($nc_core->INCLUDE_FOLDER."classes/nc_imagetransform.class.php");
+        nc_ImageTransform::createThumb($sourceField,$destField,$width,$height,$mode,$format,$quality);
+    }
+}
+
 
 /**
  * Resize with phpthumb.. 
@@ -196,7 +215,7 @@ function p_log($str) {
 /**
  * Возращает массив с дочерними разделами.
  * если указана $field - возражает одномерный массив с колонкой (напр. Subdivision_ID) 
- * ДОБИТЬ WHERE!!! - пока не работает
+ * where - условие выборки 
  */
 function p_sub_childs($csub,$field = "",$where = "") {
     global $db;
@@ -205,12 +224,28 @@ function p_sub_childs($csub,$field = "",$where = "") {
     if (empty($csub)) {
         $csub = $sub;
     }
+
+    if ($where) {
+        $where = ' AND '.$where;
+    }
     
     // 
     if (empty($field)) {
-        return $db->get_results('SELECT * FROM Subdivision WHERE     Parent_Sub_ID = '.$csub,ARRAY_A);
+        $r =  $db->get_results('SELECT * FROM Subdivision WHERE     Parent_Sub_ID = '.$csub . $where,ARRAY_A);
+
+        // ДОПОЛНИТЕЛЬНАЯ ОБРАБОТКА ССЫЛКИ И ИЗОБРАЖЕНИЯ
+        if ($r) {
+            foreach ($r as &$s) {
+                $link = $s['ExternalURL'] ? $s['ExternalURL'] : $s['Hidden_URL'];                
+                $img = $s['img'] ? p_file_path($s['img']) : '';
+                $s['_link'] = $link;
+                $s['_img'] = $img;
+            }
+        }
+
+        return $r;
     } else {        
-        return $db->get_col('SELECT '.$field.' FROM Subdivision WHERE     Parent_Sub_ID = '.$csub);
+        return $db->get_col('SELECT '.$field.' FROM Subdivision WHERE     Parent_Sub_ID = '.$csub . $where);
     }    
         
 }
@@ -340,6 +375,14 @@ function p_db_options($query) {
 function p_file_ext($file_name) {
     $info = pathinfo($file_name,PATHINFO_EXTENSION);
     return strtolower($info);
+}
+
+/* возвращает путь до файла от поля */
+function p_file_path($field) {
+    $paths = explode(':',$field);    
+    if ($paths[3]) {
+        return '/netcat_files/' . $paths[3];
+    }
 }
 
 function p_file_ext_from_type($file_type) {
