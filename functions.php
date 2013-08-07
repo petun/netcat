@@ -216,8 +216,9 @@ function p_log($str) {
  * Возращает массив с дочерними разделами.
  * если указана $field - возражает одномерный массив с колонкой (напр. Subdivision_ID) 
  * where - условие выборки 
+ * sort - соритровка
  */
-function p_sub_childs($csub,$field = "",$where = "") {
+function p_sub_childs($csub,$field = "",$where = "",$sort = "Priority") {
     global $db;
     global $sub;
     
@@ -231,7 +232,7 @@ function p_sub_childs($csub,$field = "",$where = "") {
     
     // 
     if (empty($field)) {
-        $r =  $db->get_results('SELECT * FROM Subdivision WHERE     Parent_Sub_ID = '.$csub . $where,ARRAY_A);
+        $r =  $db->get_results('SELECT * FROM Subdivision WHERE     Parent_Sub_ID = '.$csub . $where. ' ORDER BY '.$sort,ARRAY_A);
 
         // ДОПОЛНИТЕЛЬНАЯ ОБРАБОТКА ССЫЛКИ И ИЗОБРАЖЕНИЯ
         if ($r) {
@@ -245,7 +246,7 @@ function p_sub_childs($csub,$field = "",$where = "") {
 
         return $r;
     } else {        
-        return $db->get_col('SELECT '.$field.' FROM Subdivision WHERE     Parent_Sub_ID = '.$csub . $where);
+        return $db->get_col('SELECT '.$field.' FROM Subdivision WHERE     Parent_Sub_ID = '.$csub . $where . ' ORDER BY '.$sort);
     }    
         
 }
