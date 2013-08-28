@@ -26,6 +26,17 @@ class pCommentsListener {
         $comment_text = $nc_core->db->get_var('SELECT Comment FROM `Comments_Text` WHERE id = '.$Comment_ID);
         
         $subj = 'Новый комментарий: ' . $sitename . ' / ' . $subname;
+
+        //generate title for class
+        $classTitle = $nc_core->db->get_var('SELECT `TitleTemplate` FROM  `Class`  WHERE Class_ID = '.$Class_ID);
+        if ($classTitle) {
+            $field = str_replace('$f_', '', $classTitle);
+            if ($field) {
+                //p_log($field);
+                $m = $nc_core->message->get_by_id($Class_ID,$Message_ID);
+                $subj = $subj .  ' / ' . $m[$field];
+            }
+        }
         
         
         //p_log($subj . ' - '. $Comment_ID .' - '.  $comment_text);
