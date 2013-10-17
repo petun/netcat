@@ -3,6 +3,7 @@
 class pCommentsListener {
 
     private $_permissionGroup;
+    private $_updCol;
 
     public function __construct($PermissionGroup_ID) {
         // системный объект
@@ -13,6 +14,11 @@ class pCommentsListener {
 
         // группа получателей рассылки
         $this->_permissionGroup = $PermissionGroup_ID;
+    }
+
+    public function addUpdatableColumn($Class_ID,$column) {
+        //p_log('addUpdatableColumn class -  '.$Class_ID);
+        $this->_updCol[$Class_ID] = $column;
     }
     
     public function addComment($Catalogue_ID, $Subdivision_ID, $Sub_Class_ID, $Class_ID, $Message_ID, $Comment_ID) {        
@@ -49,6 +55,13 @@ class pCommentsListener {
         //$text .= '<br /><a href="http://'.$siteurl.'/netcat/admin/#module.comments.list">Управление комментариями</a>';
         
         $this->notifyCatManagers($Catalogue_ID,$subj,$text);
+
+        // update col if needed
+        if (array_key_exists($Class_ID, $this->_updCol)) {
+           // p_log('array_key_exists / run update '.$Class_ID);
+            $col = $this->_updCol[$Class_ID];
+            $nc_core->db->query('UPDATE Message'.$Class_ID. ' SET '.$col.' = NOW() WHERE Message_ID = '.$Message_ID);
+        }
     }
 
 
