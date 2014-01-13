@@ -9,17 +9,18 @@ class pCurrencyCbr {
 	}
 
 	/**
-	*
+	* $charCode - забрать курс для определенной валюты
 	**/
-	public function today() {
-		return $this->parse(strftime('%Y-%m-%d'));
+	public function today($charCode = false) {
+		return $this->parse(strftime('%Y-%m-%d'),$charCode);
 	}
 
 
 	/**
 	* $date - Дата в формате MySQL
+	* $charCode - курс для определенной валюты
 	**/
-	public function parse($date) {
+	public function parse($date,$charCode = false) {
 		$date = strftime('%d.%m.%Y',strtotime($date));
 		$xml = $this->_getXmlContent( sprintf($this->_url,$date)  );
 		if ($xml) {
@@ -32,6 +33,12 @@ class pCurrencyCbr {
 					'Name'=>(string) $Valute->Name,
 					'Value'=>(string) $Valute->Value,					
 					);
+
+				// возвращаем данные для определенной валюты
+				if ($charCode && $charCode == $data['CharCode']) {
+					return $data;
+				}
+
 				$r[] = $data;
 			}			
 		}

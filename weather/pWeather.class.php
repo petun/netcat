@@ -154,12 +154,14 @@ class pWeather {
 		return $wind_chill . ", " . $wind_speed . " км/ч";
 	}
 
-	public function getTemp() {
+	public function getTemp() {		
 		$prefix = '';
 		if ($this->_tempreture > 0) {
 			$prefix =  '+';
 		} else if ($this->_tempreture < 0) {
 			$prefix = '-';
+		} else {
+			$prefix = ' '; // !!! переделать, сделано что бы не править условие - empty()
 		}
 		return $prefix . $this->_tempreture;
 	}	
