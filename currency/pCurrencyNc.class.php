@@ -31,7 +31,7 @@ class pCurrencyNC extends pCurrencyCbr {
 		if ($data) {
 			foreach ($data as $item) {
 				$sqls[] = sprintf("INSERT INTO Message%d (Subdivision_ID,Sub_Class_ID,NumCode,CharCode,Nominal,Name,Value,cdate) 
-					VALUES (%d,%d,'%s','%s','%s','%s','%s','%s')",$this->_classId,$this->_sub,$this->_cc,$item['NumCode'],$item['CharCode'],$item['Nominal'],$item['Name'],$item['Value'],$date);
+					VALUES (%d,%d,'%s','%s','%s','%s','%s','%s')",$this->_classId,$this->_sub,$this->_cc,$item['NumCode'],$item['CharCode'],$item['Nominal'],$item['Name'], str_replace(',', '.', $item['Value']),$date);
 			}
 
 			// truncate all data
@@ -65,6 +65,35 @@ WHERE s1.CharCode = 'EUR' AND DATE(s1.cdate) = DATE('%s'))"
 			//echo $query;
 			$this->_core->db->query( $query );
 		}
+
+	}
+
+	/**
+	* $month = '2012-01-01', $charCodes - массив со значениями
+	**/
+	public function monthAvg($month,$charCodes = array('EUR','USD','EUR/USD')) {
+
+		$month = '2014-01-01';
+		foreach ($charCodes as &$code) {
+			$code = "'".$code."'";
+		}
+		unset($code);
+
+
+		$query = sprintf("
+			SELECT ROUND( AVG( Value ) , 4 ) AS Value, CharCode, Name, MAX( cdate ) AS date_end, MIN( cdate ) AS date_start
+FROM  `Message%d` 
+WHERE CharCode
+IN (%s)
+AND cdate >= DATE_FORMAT(  '%s',  '%%Y-%%m-01' ) 
+AND cdate <= LAST_DAY(  '%s' ) 
+GROUP BY CharCode
+ORDER BY Name", $this->_classId, implode(',', $charCodes), $month,$month);
+
+		//echo $query;
+		
+		return $this->_core->db->get_results($query,ARRAY_A);
+
 
 	}
 
