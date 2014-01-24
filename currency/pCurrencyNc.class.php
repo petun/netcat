@@ -72,8 +72,7 @@ WHERE s1.CharCode = 'EUR' AND DATE(s1.cdate) = DATE('%s'))"
 	* $month = '2012-01-01', $charCodes - массив со значениями
 	**/
 	public function monthAvg($month,$charCodes = array('EUR','USD','EUR/USD')) {
-
-		$month = '2014-01-01';
+		
 		foreach ($charCodes as &$code) {
 			$code = "'".$code."'";
 		}
