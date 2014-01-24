@@ -41,6 +41,29 @@ class pCurrencyNC extends pCurrencyCbr {
 			foreach ($sqls as $s) {
 				$this->_core->db->query($s);
 			}
+
+
+			// вставляем курс евро к доллару
+			$query = sprintf("INSERT INTO Message%d (Subdivision_ID,Sub_Class_ID,NumCode,CharCode,Nominal,Name,Value,cdate)
+(
+SELECT 
+ %d as `Subdivision_ID`
+ ,%d as `Sub_Class_ID`
+ ,'000' as `NumCode`
+ ,'EUR/USD' as `CharCode`
+ , 1 as Nominal
+ , 'Отношение евро к доллару' as `Name`
+ ,ROUND( (s1.value/s2.value),4) as `Value`
+ , DATE(s1.cdate)  as cdate
+FROM 
+ `Message226` s1 
+JOIN Message226 s2 ON (DATE(s1.cdate) = DATE(s2.cdate) AND s2.CharCode = 'USD')
+
+WHERE s1.CharCode = 'EUR' AND DATE(s1.cdate) = DATE('%s'))"
+			,$this->_classId,$this->_sub,$this->_cc,$date);
+
+			//echo $query;
+			$this->_core->db->query( $query );
 		}
 
 	}
