@@ -1,8 +1,9 @@
 <?php
 /**
  * Русская дата, включая день недели - %B - месяц, %A - день недели
+ * $single = true  - дата в именительном падеже 
  */
-function p_date($ctime = "", $format = "%d %B %Y, %H:%M",$lower_case = false) {
+function p_date($ctime = "", $format = "%d %B %Y, %H:%M",$lower_case = false,$single = false) {
 
     $ctime = empty($ctime) ? time() : $ctime;
 
@@ -21,7 +22,8 @@ function p_date($ctime = "", $format = "%d %B %Y, %H:%M",$lower_case = false) {
     // формируем время
     $r = strftime($format,$ctime);
     // заменяем месяц на русское название
-    $r = preg_replace_callback("/--(\d{1,2})--/",'_get_rus_month',$r);
+    $month_callback = $single ? '_get_rus_month_single' : '_get_rus_month';
+    $r = preg_replace_callback("/--(\d{1,2})--/",$month_callback,$r);
 
     // заменяем название дня недели на русское название
     $r = preg_replace_callback("/\+\+(\d{1,2})\+\+/",'_get_rus_day',$r);
@@ -54,6 +56,26 @@ function _get_rus_month($num) {
     );
     return $months[$num];
 }
+
+function _get_rus_month_single($num) {
+    $num = $num[1]*1;
+
+    $months = array(
+            1=>"Январь"
+            ,2=>"Февраль"
+            ,3=>"Март"
+            ,4=>"Апрель"
+            ,5=>"Май"
+            ,6=>"Июнь"
+            ,7=>"Июль"
+            ,8=>"Август"
+            ,9=>"Сентябрь"
+            ,10=>"Октябрь"
+            ,11=>"Ноябрь"
+            ,12=>"Декабрь"
+    );
+    return $months[$num];
+} 
 
 
 function _get_rus_day($num) {

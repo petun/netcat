@@ -80,14 +80,33 @@ WHERE s1.CharCode = 'EUR' AND DATE(s1.cdate) = DATE('%s'))"
 
 
 		$query = sprintf("
-			SELECT ROUND( AVG( Value ) , 4 ) AS Value, CharCode, Name, MAX( cdate ) AS date_end, MIN( cdate ) AS date_start
+			SELECT ROUND( AVG( thisMonth.Value ) , 4 ) AS Value, thisMonth.CharCode, thisMonth.Name, MAX( thisMonth.cdate ) AS date_end, MIN( thisMonth.cdate ) AS date_start,
+
+prev.Value as prevValue,
+MAX( prev.date_end) AS date_end_prev,
+MIN( prev.date_start) AS date_start_prev,
+ROUND( AVG( thisMonth.Value ) , 4 ) - prev.Value as diff
+
+FROM  `Message%d` thisMonth
+
+LEFT JOIN (
+SELECT ROUND( AVG( Value ) , 4 ) AS Value, CharCode, Name, MAX( cdate ) AS date_end, MIN( cdate ) AS date_start
 FROM  `Message%d` 
 WHERE CharCode
 IN (%s)
-AND cdate >= DATE_FORMAT(  '%s',  '%%Y-%%m-01' ) 
-AND cdate <= LAST_DAY(  '%s' ) 
+AND cdate >= DATE_FORMAT(  DATE_ADD('%s', INTERVAL -1 MONTH) ,  '%%Y-%%m-01' ) 
+AND cdate <= LAST_DAY( DATE_ADD('%s',INTERVAL -1 MONTH) ) 
 GROUP BY CharCode
-ORDER BY Name", $this->_classId, implode(',', $charCodes), $month,$month);
+) prev ON (prev.CharCode = thisMonth.CharCode)
+
+WHERE thisMonth.CharCode
+IN (%s)
+AND thisMonth.cdate >= DATE_FORMAT(  '%s',  '%%Y-%%m-01' ) 
+AND thisMonth.cdate <= LAST_DAY(  '%s' ) 
+GROUP BY thisMonth.CharCode", 
+$this->_classId,
+$this->_classId,
+implode(',', $charCodes), $month,$month,implode(',', $charCodes),$month,$month);
 
 		//echo $query;
 		
