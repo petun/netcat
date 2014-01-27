@@ -108,11 +108,20 @@ $this->_classId,
 $this->_classId,
 implode(',', $charCodes), $month,$month,implode(',', $charCodes),$month,$month);
 
-		//echo $query;
-		
-		return $this->_core->db->get_results($query,ARRAY_A);
+		$result = $this->_core->db->get_results($query,ARRAY_A);
+		if ($result) {
+			
 
+			$new_result = array();
+			foreach ($result as $row) {
+				$new_result[$row['CharCode']] = $row;
+			}
+			
+			return $new_result; 
 
+		} else {
+			return array();
+		}
 	}
 
 
