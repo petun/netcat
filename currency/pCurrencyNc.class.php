@@ -52,7 +52,7 @@ SELECT
  ,'000' as `NumCode`
  ,'EUR/USD' as `CharCode`
  , 1 as Nominal
- , 'Отношение евро к доллару' as `Name`
+ , 'Евро / доллар' as `Name`
  ,ROUND( (s1.value/s2.value),4) as `Value`
  , DATE(s1.cdate)  as cdate
 FROM 
@@ -122,6 +122,18 @@ implode(',', $charCodes), $month,$month,implode(',', $charCodes),$month,$month);
 		} else {
 			return array();
 		}
+	}
+
+	public function availableYears()  {
+		$query = "SELECT DISTINCT(YEAR(cdate)) `cdate` FROM `Message".$this->_classId."` ORDER BY cdate DESC";
+		$years = $this->_core->db->get_results($query,ARRAY_A);
+
+		foreach ($years as $year) {
+			$result[] = $year['cdate'];
+		}
+
+		return $result;
+
 	}
 
 
