@@ -320,7 +320,7 @@ JOIN
 * Возращает список по его идентификатору.. Массив вида id=>value
 * Нужно добавить еще условие и поля для выборки
 */
-function p_list($list) {
+function p_list($list, $where = "1 = 1") {
     global $db;
 
     $name = 'Classificator_'.$list;
@@ -329,7 +329,7 @@ function p_list($list) {
     $field_order = $list.'_Priority';
 
     $r = array();
-    $rows =  $db->get_results("SELECT  $field_id as id,$field_value as value FROM $name ORDER BY $field_order",ARRAY_A);    
+    $rows =  $db->get_results("SELECT  $field_id as id,$field_value as value FROM $name WHERE $where ORDER BY $field_order",ARRAY_A);    
     if (is_array($r)) {
         foreach ($rows as $row) {
             $r[$row['id']] = $row['value'];
@@ -359,8 +359,14 @@ function p_human_size($size) {
 }
 
 
-function p_human_price($price) {
-    return str_replace(',', ' ', number_format($price));
+function p_human_price($price,$addKopek = false) {
+    $r = str_replace(',', ' ', number_format($price));
+    if ($addKopek) {
+        return $r . '.00';
+    }
+    else {
+        return $r;
+    }
 }
 
 function p_human_decl($digit, $variants,$onlyWord = false) {    
