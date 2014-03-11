@@ -42,7 +42,7 @@ class pCommentsListener {
                 $m = $nc_core->message->get_by_id($Class_ID,$Message_ID);
                 $subj = $subj .  ' / ' . $m[$field];
             }
-        }
+    }
         
         
         //p_log($subj . ' - '. $Comment_ID .' - '.  $comment_text);
