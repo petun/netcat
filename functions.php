@@ -317,22 +317,32 @@ JOIN
 
 
 /**
- * Возращает список по его идентификатору.. Массив вида id=>value
- * Нужно добавить еще поля для выборки
+ * @param $list - Список в неткате
+ * @param string $where - Условие. (a = 12)
+ * @param bool $full - все поля или ключ значение
+ * @return array
  */
-function p_list($list, $where = "1 = 1") {
+function p_list($list, $where = "1 = 1", $full = false) {
 	global $db;
 
 	$name = 'Classificator_' . $list;
-	$field_id = $list . '_ID';
-	$field_value = $list . '_Name';
-	$field_order = $list . '_Priority';
+	$field_id = $list.'_ID';
+	$field_name = $list.'_Name';
+	$field_value = 'Value';
+	$field_order = $list.'_Priority';
 
 	$r = array();
-	$rows = $db->get_results("SELECT  $field_id as id,$field_value as value FROM $name WHERE $where ORDER BY $field_order", ARRAY_A);
+	$rows =  $db->get_results("SELECT  $field_id as id,$field_name as name,$field_value as value FROM $name WHERE $where ORDER BY $field_order",ARRAY_A);
 	if (is_array($r)) {
 		foreach ($rows as $row) {
-			$r[$row['id']] = $row['value'];
+			if ($full) {
+				$r[$row['id']] = array(
+					'name'=> $row['name'],
+					'value'=>$row['value']
+				);
+			} else {
+				$r[$row['id']] = $row['name'];
+			}
 		}
 	}
 
