@@ -2,8 +2,9 @@
 
 class pCommentsListener {
 
-    private $_permissionGroup;
-    private $_updCol;
+    protected $_permissionGroup;
+
+	protected $_updCol;
 
     public function __construct($PermissionGroup_ID) {
         // системный объект
@@ -52,6 +53,7 @@ class pCommentsListener {
 
         $url = 'http://'.$siteurl.nc_message_link($Message_ID,$Class_ID);
         $text .= '<br /><a href="'.$url.'">Перейти к комментарию</a>';
+		$text .= $this->additionalText($Catalogue_ID, $Subdivision_ID, $Sub_Class_ID, $Class_ID, $Message_ID, $Comment_ID);
         //$text .= '<br /><a href="http://'.$siteurl.'/netcat/admin/#module.comments.list">Управление комментариями</a>';
         
         $this->notifyCatManagers($Catalogue_ID,$subj,$text);
@@ -63,6 +65,14 @@ class pCommentsListener {
             $nc_core->db->query('UPDATE Message'.$Class_ID. ' SET '.$col.' = NOW() WHERE Message_ID = '.$Message_ID);
         }
     }
+
+	/**
+	 * Метод добавляет производльный текст в конец письма.
+	 * Этот класс можно унаследовать, и уже там переопределить метод
+	 */
+	public function additionalText($Catalogue_ID, $Subdivision_ID, $Sub_Class_ID, $Class_ID, $Message_ID, $Comment_ID) {
+		return '';
+	}
 
 
     public function notifyCatManagers($catalogue,$subj, $text)  {
