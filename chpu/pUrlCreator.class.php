@@ -22,7 +22,7 @@ class pUrlCreator
 			if (empty($message['Keyword'])) {
 				$keyword = $this->_titleFromString($message[$this->_classes[$Class_ID]]);
 				if (!empty($keyword)) {
-					$keyword = $Message_ID.'-'.$keyword;
+					$keyword = $keyword.'-id'.$Message_ID;
 					p_log('Generate title and save. ID '.$Message_ID.', keyword: '.$keyword);
 					nc_Core::get_object()->db->query("UPDATE Message$Class_ID SET Keyword = '$keyword' WHERE Message_ID = $Message_ID");
 				}
