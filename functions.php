@@ -85,8 +85,11 @@ function _get_rus_day($num) {
 
 /**
  * Выводит полный тайтл для страницы, используется в теге title
+ * $separator - разделитель между страницами и разделами (по умолчанию " / ")
+ * $reverse - если false, тайтл формируется так: Название сайта / Раздел / Страница,
+ *  если true, то наоборот: Страница / Раздел / Название сайта
  */
-function p_title() {
+function p_title($separator = " / ", $reverse = false) {
 	global $nc_core;
 	global $sub;
 	global $current_catalogue;
@@ -97,18 +100,34 @@ function p_title() {
 	$browse_top[active] = "%NAME";
 	$browse_top[active_link] = "%NAME";
 	$browse_top[unactive] = "%NAME";
-	$browse_top[divider] = " / ";
+	$browse_top[divider] = $separator;
 	$browse_top[suffix] = "";
 
 	if ($nc_core->page->get_title()) {
 		return $nc_core->page->get_title();
 	} else {
-		// если главная
-		if ($sub == $current_catalogue[Title_Sub_ID]) {
-			return $current_catalogue[Catalogue_Name] . ' / Главная';
-		} else {
-			return $current_catalogue[Catalogue_Name] . ' / ' . strip_tags(s_browse_path_range(-1, $sub_level_count - 1, $browse_top));
-		}
+        if ($reverse == false)
+        {
+            // если главная
+            if ($sub == $current_catalogue[Title_Sub_ID]) {
+                return $current_catalogue[Catalogue_Name] . $separator . 'Главная';
+            } else {
+                return $current_catalogue[Catalogue_Name] . $separator . strip_tags(s_browse_path_range(-1, $sub_level_count - 1, $browse_top));
+            }
+        } else {
+            // Разворачиваем строку "хлебные крошки" и превращаем в массив
+            $arr_reverse_titles = array_reverse(explode($separator,strip_tags(s_browse_path_range(-1, $sub_level_count - 1, $browse_top))));
+            // если главная
+            if ($sub == $current_catalogue[Title_Sub_ID]) {
+                return  'Главная'. $separator . $current_catalogue[Catalogue_Name];
+            } else {
+                $reverse_title = "";
+                foreach ($arr_reverse_titles as $value) {
+                    $reverse_title .= $value;
+                }
+                return $reverse_title . $separator . $current_catalogue[Catalogue_Name];
+            }
+        }
 	}
 }
 
