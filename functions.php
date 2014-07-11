@@ -85,8 +85,11 @@ function _get_rus_day($num) {
 
 /**
  * Выводит полный тайтл для страницы, используется в теге title
+ * $separator - разделитель между страницами и разделами (по умолчанию " / ")
+ * $reverse - если false, тайтл формируется так: Название сайта / Раздел / Страница,
+ *  если true, то наоборот: Страница / Раздел / Название сайта
  */
-function p_title() {
+function p_title($separator = " / ", $reverse = false) {
 	global $nc_core;
 	global $sub;
 	global $current_catalogue;
@@ -97,18 +100,22 @@ function p_title() {
 	$browse_top[active] = "%NAME";
 	$browse_top[active_link] = "%NAME";
 	$browse_top[unactive] = "%NAME";
-	$browse_top[divider] = " / ";
+	$browse_top[divider] = $separator;
 	$browse_top[suffix] = "";
 
 	if ($nc_core->page->get_title()) {
 		return $nc_core->page->get_title();
 	} else {
-		// если главная
-		if ($sub == $current_catalogue[Title_Sub_ID]) {
-			return $current_catalogue[Catalogue_Name] . ' / Главная';
-		} else {
-			return $current_catalogue[Catalogue_Name] . ' / ' . strip_tags(s_browse_path_range(-1, $sub_level_count - 1, $browse_top));
-		}
+        // Если главная
+        if ($sub == $current_catalogue[Title_Sub_ID]) {
+            $str_titles = $current_catalogue[Catalogue_Name] . $separator . 'Главная';
+        } else {
+            $str_titles = $current_catalogue[Catalogue_Name] . $separator . strip_tags(s_browse_path_range(-1, $sub_level_count - 1, $browse_top));
+        }
+        // Переводим строку "хлебные крошки" в массив
+        $arr_titles = explode($separator,$str_titles);
+        // Выводим прямой или развернутый тайтал в зависимости от $reverse
+        return $reverse ? implode($separator,array_reverse($arr_titles)) : implode($separator,$arr_titles);
 	}
 }
 
