@@ -100,22 +100,22 @@ function p_title($separator = " / ", $reverse = false) {
 	$browse_top[active] = "%NAME";
 	$browse_top[active_link] = "%NAME";
 	$browse_top[unactive] = "%NAME";
-	$browse_top[divider] = $separator;
+	$browse_top[divider] = " ::: ";
 	$browse_top[suffix] = "";
 
 	if ($nc_core->page->get_title()) {
 		return $nc_core->page->get_title();
 	} else {
+        // Создаем массив элементов "хлебных крошек"
+        $arr_titles[] = $current_catalogue[Catalogue_Name];
         // Если главная
         if ($sub == $current_catalogue[Title_Sub_ID]) {
-            $str_titles = $current_catalogue[Catalogue_Name] . $separator . 'Главная';
+            $arr_titles[] = 'Главная';
         } else {
-            $str_titles = $current_catalogue[Catalogue_Name] . $separator . strip_tags(s_browse_path_range(-1, $sub_level_count - 1, $browse_top));
+            $arr_titles = array_merge($arr_titles, explode($browse_top[divider], strip_tags(s_browse_path_range(-1, $sub_level_count - 1, $browse_top))) );
         }
-        // Переводим строку "хлебные крошки" в массив
-        $arr_titles = explode($separator,$str_titles);
-        // Выводим прямой или развернутый тайтал в зависимости от $reverse
-        return $reverse ? implode($separator,array_reverse($arr_titles)) : implode($separator,$arr_titles);
+        // Выводим прямой или развернутый тайтл в зависимости от $reverse
+        return $reverse ? implode($separator, array_reverse($arr_titles)) : implode($separator, $arr_titles);
 	}
 }
 
