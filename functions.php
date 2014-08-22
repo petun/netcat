@@ -1,7 +1,11 @@
 <?php
+
 /**
- * Русская дата, включая день недели - %B - месяц, %A - день недели
- * $single = true  - дата в именительном падеже
+ * @param string $ctime - Теущее время в формате mysql или unix time
+ * @param string $format - Формат вывода, весь формат http://ru2.php.net/manual/en/function.strftime.php
+ * @param bool $lower_case - все с нижнем регистре
+ * @param bool $single - дата в именительном падеже
+ * @return mixed|string
  */
 function p_date($ctime = "", $format = "%d %B %Y, %H:%M", $lower_case = false, $single = false) {
 
@@ -120,7 +124,9 @@ function p_title($separator = " / ", $reverse = false) {
 }
 
 /**
- * Shortname for $nc_core->subdivision->get_by_id($id,$field)
+ * @param $id
+ * @param string $field
+ * @return mixed
  */
 function p_sub($id, $field = "") {
 	global $nc_core;
@@ -135,7 +141,9 @@ function p_sub($id, $field = "") {
 }
 
 /**
- * Quick get link for sub
+ * Ссылка на раздел сайта. Выводится либо HiddenURL либо ExternalURL
+ * @param $id
+ * @return mixed
  */
 function p_sub_link($id) {
 	$sub = p_sub($id);
@@ -148,7 +156,9 @@ function p_sub_link($id) {
 }
 
 /**
- * Quick get title for sub
+ * Заголовок раздела
+ * @param $id
+ * @return mixed
  */
 function p_sub_title($id) {
 	return p_sub($id, 'Subdivision_Name');
@@ -231,8 +241,10 @@ function p_thumb($image_link, $params) {
 }
 
 
+
 /**
- * Log str to regular file
+ * Логирует строку текст в файл netcat_cache/debug.log
+ * @param $str
  */
 function p_log($str) {
 	$log = $_SERVER['DOCUMENT_ROOT'] . '/netcat_cache/debug.log';
