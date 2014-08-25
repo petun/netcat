@@ -63,6 +63,11 @@ function p_cc($cc, $field = "")
 function p_cc_title($cc)
 function p_cc_link($cc)
 
+// функции для работы с сайтом
+function p_catalogue_link($catalogueId)
+function p_catalogue_link_from_sub($subId)
+function p_catalogue_title()
+
 /**
  * Quick resize picture
  * Функция вызывается ТОЛЬКО из Действия после добавления - изменения
@@ -90,23 +95,77 @@ function p_resize_thumb($sourceField, $destField, $width, $height, $mode = 0, $f
  */
 function p_thumb($image_link, $params)
 
-function p_log($str) {
-	$log = $_SERVER['DOCUMENT_ROOT'] . '/netcat_cache/debug.log';
-	$fh = fopen($log, "a+");
-	fwrite($fh, strftime('%d.%m.%Y %T') . ': ' . $str . "\n");
-	fclose($fh);
-}
-
-
 /**
  * Логирует строку текст в файл netcat_cache/debug.log
  * @param $str
  */
 function p_log($str)
 
+
+/**
+ * Возращает массив с дочерними разделами.
+ * если указана $field - возражает одномерный массив с колонкой (напр. Subdivision_ID)
+ * where - условие выборки
+ * sort - соритровка
+ */
+function p_sub_childs($csub, $field = "", $where = "", $sort = "Priority")
+
+/**
+ * Возвращает кол-во разделов в разделе $cSub
+ * @param null $cSub
+ * @return mixed
+ */
+function p_sub_child_count($cSub = null)
+
+
+// строковые функции
+/**
+ * Возращает размер файла в человекопонятном виде
+ */
+function p_human_size($size)
+
+/**
+ * Отображает цены в удобочитаемом виде
+ * @param $price Цисло
+ * @param bool $addTrifle Добавлять или нет копейки.
+ * @return mixed|string
+ */
+function p_human_price($price, $addTrifle = false)
+
+
+/**
+ * Правильное формирование окончаний, в зависимости от количества
+ * @param $digit Число
+ * @param $variants Массив из трех вариантов ('один','два','три')
+ * @param bool $onlyWord возвращать только строку, в противном случае вместе с числом
+ * @return string
+ */
+function p_human_decl($digit, $variants, $onlyWord = false) 
+
+// функции для работы с файлами
+/**
+ * Возвращает разрешение файла
+ * @param $file_name
+ * @return string
+ */
+function p_file_ext($file_name) 
+
+/**
+ * Возвращает путь до файла из поля БД
+ * @param $field
+ * @return string
+ */
+function p_file_path($field)
+
+/**
+ * Возвращает расширение по mime типу
+ * @param $file_type
+ * @return mixed
+ */
+function p_file_ext_from_type($file_type)
 ```
 
-продолжение следует...
+
 
 
 

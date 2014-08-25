@@ -305,23 +305,28 @@ function p_sub_all_childs($parent_sub, &$ida, $where = "") {
 	}
 }
 
-function p_sub_child_count($csub = null) {
+/**
+ * Возвращает кол-во разделов в разделе $cSub
+ * @param null $cSub
+ * @return mixed
+ */
+function p_sub_child_count($cSub = null) {
 	global $db;
 	global $sub;
 
-	if (empty($csub)) {
-		$csub = $sub;
+	if (empty($cSub)) {
+		$cSub = $sub;
 	}
 
-	return $db->get_var('SELECT COUNT(*) FROM Subdivision WHERE     Parent_Sub_ID = ' . $csub);
+	return $db->get_var('SELECT COUNT(*) FROM Subdivision WHERE     Parent_Sub_ID = ' . $cSub);
 }
 
-function p_catalogue_link($catalogue_id) {
+function p_catalogue_link($catalogueId) {
 	global $nc_core;
-	return 'http://' . $nc_core->catalogue->get_by_id($catalogue_id, 'Domain');
+	return 'http://' . $nc_core->catalogue->get_by_id($catalogueId, 'Domain');
 }
 
-function p_catalogue_link_from_sub($subid) {
+function p_catalogue_link_from_sub($subId) {
 	global $db;
 	return $db->get_var("SELECT 
  CONCAT('http://',Catalogue.domain)
@@ -330,7 +335,7 @@ Subdivision
 JOIN 
  Catalogue ON (Catalogue.Catalogue_ID = Subdivision.Catalogue_ID)
  WHERE 
- Subdivision.Subdivision_ID = $subid 
+ Subdivision.Subdivision_ID = $subId
  ");
 }
 
@@ -404,16 +409,28 @@ function p_human_size($size) {
 	return round($size) . ' ' . $units[$i];
 }
 
-
-function p_human_price($price, $addKopek = false) {
+/**
+ * Отображает цены в удобочитаемом виде
+ * @param $price Цисло
+ * @param bool $addTrifle Добавлять или нет копейки.
+ * @return mixed|string
+ */
+function p_human_price($price, $addTrifle = false) {
 	$r = str_replace(',', ' ', number_format($price));
-	if ($addKopek) {
+	if ($addTrifle) {
 		return $r . '.00';
 	} else {
 		return $r;
 	}
 }
 
+/**
+ * Правильное формирование окончаний, в зависимости от количества
+ * @param $digit Число
+ * @param $variants Массив из трех вариантов ('один','два','три')
+ * @param bool $onlyWord возвращать только строку, в противном случае вместе с числом
+ * @return string
+ */
 function p_human_decl($digit, $variants, $onlyWord = false) {
 
 	$i = $onlyWord ? '' : $digit . ' ';
@@ -436,6 +453,7 @@ function p_human_decl($digit, $variants, $onlyWord = false) {
 /**
  * Функция для формирования массива из выборки.. 1 - столбец = ключ, 2 - значение ключа
  **/
+// todo избавиться от этой функции.. это дубль уже существующей. p_db_list
 function p_db_options($query) {
 	global $db;
 	$result = array();
@@ -450,12 +468,21 @@ function p_db_options($query) {
 	return $result;
 }
 
+/**
+ * Возвращает разрешение файла
+ * @param $file_name
+ * @return string
+ */
 function p_file_ext($file_name) {
 	$info = pathinfo($file_name, PATHINFO_EXTENSION);
 	return strtolower($info);
 }
 
-/* возвращает путь до файла от поля */
+/**
+ * Возвращает путь до файла из поля БД
+ * @param $field
+ * @return string
+ */
 function p_file_path($field) {
 	$paths = explode(':', $field);
 	if ($paths[3]) {
@@ -463,6 +490,13 @@ function p_file_path($field) {
 	}
 }
 
+
+/**
+ * Возвращает расширение по mime типу
+ * @param $file_type
+ * @return mixed
+ */
+// todo функция не верная. т.к. бфвают случаи, когда за одно расширение отвечает несколько mime типов. переделать нужно.
 function p_file_ext_from_type($file_type) {
 	$mime_types = array("323" => "text/h323",
 		"acx" => "application/internet-property-stream",
