@@ -9,7 +9,7 @@ Netcat Helpers
 
 Далее в начале файла netcat/modules/default/function.php прописать
 ```sh
-require_once(dirname(FILE).'/pmod/functions.php');
+require_once(dirname(__FILE__).'/pmod/functions.php');
 ```
 
 Проект представляет из себя большое количество разнообразных решений.
