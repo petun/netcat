@@ -68,6 +68,25 @@ function p_catalogue_link($catalogueId)
 function p_catalogue_link_from_sub($subId)
 function p_catalogue_title()
 
+
+/**
+ * Возвращает массив по списку в системе.
+ * @param $list - Список в неткате
+ * @param string $where - Условие. (a = 12)
+ * @param bool $full - все поля или ключ значение
+ * @return array
+ */
+function p_list($list, $where = "1 = 1", $full = false)
+
+/**
+ * Возвращаем массив из любого запроса.
+ * @param $query
+ * @param $idField
+ * @param $valueField
+ * @return array
+ */
+function p_db_list($query, $idField, $valueField)
+
 /**
  * Quick resize picture
  * Функция вызывается ТОЛЬКО из Действия после добавления - изменения
