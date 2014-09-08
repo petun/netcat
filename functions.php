@@ -91,9 +91,10 @@ function _get_rus_day($num) {
  * Выводит полный тайтл для страницы, используется в теге title
  * $separator - разделитель между страницами и разделами (по умолчанию " / ")
  * $reverse - если false, тайтл формируется так: Название сайта / Раздел / Страница,
- *  если true, то наоборот: Страница / Раздел / Название сайта
+ * $includeSeo - принимать во внимание вывод $nc_core->page->get_title()
+ * если true, то наоборот: Страница / Раздел / Название сайта
  */
-function p_title($separator = " / ", $reverse = false) {
+function p_title($separator = " / ", $reverse = false, $includeSeo = true) {
 	global $nc_core;
 	global $sub;
 	global $current_catalogue;
@@ -107,7 +108,7 @@ function p_title($separator = " / ", $reverse = false) {
 	$browse_top[divider] = " ::: ";
 	$browse_top[suffix] = "";
 
-	if ($nc_core->page->get_title()) {
+	if ($nc_core->page->get_title() && $includeSeo) {
 		return $nc_core->page->get_title();
 	} else {
         // Создаем массив элементов "хлебных крошек"
