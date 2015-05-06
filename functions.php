@@ -1,7 +1,11 @@
 <?php
+
 /**
- * Русская дата, включая день недели - %B - месяц, %A - день недели
- * $single = true  - дата в именительном падеже
+ * @param string $ctime - Теущее время в формате mysql или unix time
+ * @param string $format - Формат вывода, весь формат http://ru2.php.net/manual/en/function.strftime.php
+ * @param bool $lower_case - все с нижнем регистре
+ * @param bool $single - дата в именительном падеже
+ * @return mixed|string
  */
 function p_date($ctime = "", $format = "%d %B %Y, %H:%M", $lower_case = false, $single = false) {
 
@@ -87,9 +91,10 @@ function _get_rus_day($num) {
  * Выводит полный тайтл для страницы, используется в теге title
  * $separator - разделитель между страницами и разделами (по умолчанию " / ")
  * $reverse - если false, тайтл формируется так: Название сайта / Раздел / Страница,
- *  если true, то наоборот: Страница / Раздел / Название сайта
+ * $includeSeo - принимать во внимание вывод $nc_core->page->get_title()
+ * если true, то наоборот: Страница / Раздел / Название сайта
  */
-function p_title($separator = " / ", $reverse = false) {
+function p_title($separator = " / ", $reverse = false, $includeSeo = true) {
 	global $nc_core;
 	global $sub;
 	global $current_catalogue;
@@ -103,7 +108,7 @@ function p_title($separator = " / ", $reverse = false) {
 	$browse_top[divider] = " ::: ";
 	$browse_top[suffix] = "";
 
-	if ($nc_core->page->get_title()) {
+	if ($nc_core->page->get_title() && $includeSeo) {
 		return $nc_core->page->get_title();
 	} else {
         // Создаем массив элементов "хлебных крошек"
@@ -120,7 +125,9 @@ function p_title($separator = " / ", $reverse = false) {
 }
 
 /**
- * Shortname for $nc_core->subdivision->get_by_id($id,$field)
+ * @param $id
+ * @param string $field
+ * @return mixed
  */
 function p_sub($id, $field = "") {
 	global $nc_core;
@@ -135,7 +142,9 @@ function p_sub($id, $field = "") {
 }
 
 /**
- * Quick get link for sub
+ * Ссылка на раздел сайта. Выводится либо HiddenURL либо ExternalURL
+ * @param $id
+ * @return mixed
  */
 function p_sub_link($id) {
 	$sub = p_sub($id);
@@ -148,7 +157,9 @@ function p_sub_link($id) {
 }
 
 /**
- * Quick get title for sub
+ * Заголовок раздела
+ * @param $id
+ * @return mixed
  */
 function p_sub_title($id) {
 	return p_sub($id, 'Subdivision_Name');
@@ -231,8 +242,10 @@ function p_thumb($image_link, $params) {
 }
 
 
+
 /**
- * Log str to regular file
+ * Логирует строку текст в файл netcat_cache/debug.log
+ * @param $str
  */
 function p_log($str) {
 	$log = $_SERVER['DOCUMENT_ROOT'] . '/netcat_cache/debug.log';
@@ -293,23 +306,28 @@ function p_sub_all_childs($parent_sub, &$ida, $where = "") {
 	}
 }
 
-function p_sub_child_count($csub = null) {
+/**
+ * Возвращает кол-во разделов в разделе $cSub
+ * @param null $cSub
+ * @return mixed
+ */
+function p_sub_child_count($cSub = null) {
 	global $db;
 	global $sub;
 
-	if (empty($csub)) {
-		$csub = $sub;
+	if (empty($cSub)) {
+		$cSub = $sub;
 	}
 
-	return $db->get_var('SELECT COUNT(*) FROM Subdivision WHERE     Parent_Sub_ID = ' . $csub);
+	return $db->get_var('SELECT COUNT(*) FROM Subdivision WHERE     Parent_Sub_ID = ' . $cSub);
 }
 
-function p_catalogue_link($catalogue_id) {
+function p_catalogue_link($catalogueId) {
 	global $nc_core;
-	return 'http://' . $nc_core->catalogue->get_by_id($catalogue_id, 'Domain');
+	return 'http://' . $nc_core->catalogue->get_by_id($catalogueId, 'Domain');
 }
 
-function p_catalogue_link_from_sub($subid) {
+function p_catalogue_link_from_sub($subId) {
 	global $db;
 	return $db->get_var("SELECT 
  CONCAT('http://',Catalogue.domain)
@@ -318,12 +336,13 @@ Subdivision
 JOIN 
  Catalogue ON (Catalogue.Catalogue_ID = Subdivision.Catalogue_ID)
  WHERE 
- Subdivision.Subdivision_ID = $subid 
+ Subdivision.Subdivision_ID = $subId
  ");
 }
 
 
 /**
+ * Возвращает массив по списку в системе.
  * @param $list - Список в неткате
  * @param string $where - Условие. (a = 12)
  * @param bool $full - все поля или ключ значение
@@ -357,8 +376,12 @@ function p_list($list, $where = "1 = 1", $full = false) {
 }
 
 /**
- * Возвращаем асоциативный массив из запроса
- * */
+ * Возвращаем массив из любого запроса.
+ * @param $query
+ * @param $idField
+ * @param $valueField
+ * @return array
+ */
 function p_db_list($query, $idField, $valueField) {
 	global $db;
 	$result = array();
@@ -392,16 +415,28 @@ function p_human_size($size) {
 	return round($size) . ' ' . $units[$i];
 }
 
-
-function p_human_price($price, $addKopek = false) {
+/**
+ * Отображает цены в удобочитаемом виде
+ * @param $price Цисло
+ * @param bool $addTrifle Добавлять или нет копейки.
+ * @return mixed|string
+ */
+function p_human_price($price, $addTrifle = false) {
 	$r = str_replace(',', ' ', number_format($price));
-	if ($addKopek) {
+	if ($addTrifle) {
 		return $r . '.00';
 	} else {
 		return $r;
 	}
 }
 
+/**
+ * Правильное формирование окончаний, в зависимости от количества
+ * @param $digit Число
+ * @param $variants Массив из трех вариантов ('один','два','три')
+ * @param bool $onlyWord возвращать только строку, в противном случае вместе с числом
+ * @return string
+ */
 function p_human_decl($digit, $variants, $onlyWord = false) {
 
 	$i = $onlyWord ? '' : $digit . ' ';
@@ -424,6 +459,7 @@ function p_human_decl($digit, $variants, $onlyWord = false) {
 /**
  * Функция для формирования массива из выборки.. 1 - столбец = ключ, 2 - значение ключа
  **/
+// todo избавиться от этой функции.. это дубль уже существующей. p_db_list
 function p_db_options($query) {
 	global $db;
 	$result = array();
@@ -438,12 +474,21 @@ function p_db_options($query) {
 	return $result;
 }
 
+/**
+ * Возвращает разрешение файла
+ * @param $file_name
+ * @return string
+ */
 function p_file_ext($file_name) {
 	$info = pathinfo($file_name, PATHINFO_EXTENSION);
 	return strtolower($info);
 }
 
-/* возвращает путь до файла от поля */
+/**
+ * Возвращает путь до файла из поля БД
+ * @param $field
+ * @return string
+ */
 function p_file_path($field) {
 	$paths = explode(':', $field);
 	if ($paths[3]) {
@@ -451,6 +496,13 @@ function p_file_path($field) {
 	}
 }
 
+
+/**
+ * Возвращает расширение по mime типу
+ * @param $file_type
+ * @return mixed
+ */
+// todo функция не верная. т.к. бфвают случаи, когда за одно расширение отвечает несколько mime типов. переделать нужно.
 function p_file_ext_from_type($file_type) {
 	$mime_types = array("323" => "text/h323",
 		"acx" => "application/internet-property-stream",
