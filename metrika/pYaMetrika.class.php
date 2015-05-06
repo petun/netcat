@@ -21,7 +21,7 @@ class pYaMetrika {
 		$json = $this->download(sprintf($this->_statDayUrl,$counter_id, $this->_token));
 		$data =  $this->parseData($json);
 		if ($data) {
-			return $this->dataFromObject( $data->data[0] );			
+			return $this->dataFromObject( array_pop($data->data) );			
 		}
 	}
 
