@@ -12,8 +12,8 @@ class pTranslate {
 
 		$file = dirname(__FILE__).'/lang/' . $this->_catalogueId . '.php';
 
-		if (file_exists($file)) {
-			include_once($file);
+		if (file_exists($file)) {			
+			include($file);
 			/* @var $lang array */
 			$this->_storage = $lang;
 		}
@@ -25,6 +25,14 @@ class pTranslate {
 			return $this->_storage[$key];
 		}
 		return null;
+	}
+
+	public function getAll() {
+		return $this->_storage;
+	}
+
+	public function getCatalogueId() {
+		return $this->_catalogueId;	
 	}
 
 
