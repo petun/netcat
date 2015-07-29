@@ -137,7 +137,13 @@ function p_sub($id, $field = "") {
 	if ($id == $sub) {
 		return (!empty($field) ? $current_sub[$field] : $current_sub);
 	} else {
-		return $nc_core->subdivision->get_by_id($id, $field);
+		try {
+			$sub = $nc_core->subdivision->get_by_id($id, $field);
+			return $sub;
+		} catch (Exception $e) {
+
+		}
+		return false;		
 	}
 }
 

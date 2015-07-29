@@ -5,7 +5,7 @@ class pTranslate {
 
 	private $_catalogueId;
 
-	private $_storage;
+	private $_storage = array();
 
 	public function __construct($catalogueId) {
 		$this->_catalogueId =  $catalogueId;
@@ -15,7 +15,8 @@ class pTranslate {
 		if (file_exists($file)) {			
 			include($file);
 			/* @var $lang array */
-			$this->_storage = $lang;
+			if (isset($lang) && is_array($lang))
+				$this->_storage = $lang;
 		}
 	}
 
