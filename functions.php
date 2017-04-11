@@ -7,7 +7,7 @@
  * @param bool $single - дата в именительном падеже
  * @return mixed|string
  */
-function p_date($ctime = "", $format = "%d %B %Y, %H:%M", $lower_case = false, $single = false) {
+function p_date($ctime = "", $format = "%d %B %Y", $lower_case = false, $single = false) {
 
 	$ctime = empty($ctime) ? time() : $ctime;
 
@@ -137,7 +137,13 @@ function p_sub($id, $field = "") {
 	if ($id == $sub) {
 		return (!empty($field) ? $current_sub[$field] : $current_sub);
 	} else {
-		return $nc_core->subdivision->get_by_id($id, $field);
+		try {
+			$modelSub = $nc_core->subdivision->get_by_id($id, $field);
+			return $modelSub;
+		} catch (Exception $e) {
+
+		}
+		return false;		
 	}
 }
 
@@ -147,7 +153,12 @@ function p_sub($id, $field = "") {
  * @return mixed
  */
 function p_sub_link($id) {
-	$sub = p_sub($id);
+	if (!is_array($id)) {
+		$sub = p_sub($id);
+	} else {
+		$sub = $id;
+	}
+
 
 	if (!empty($sub['ExternalURL'])) {
 		return $sub['ExternalURL'];
@@ -162,6 +173,9 @@ function p_sub_link($id) {
  * @return mixed
  */
 function p_sub_title($id) {
+	if (is_array($id)) {
+		return $id['Subdivision_Name'];
+	}
 	return p_sub($id, 'Subdivision_Name');
 }
 
@@ -264,7 +278,7 @@ function p_sub_childs($csub, $field = "", $where = "", $sort = "Priority") {
 	global $db;
 	global $sub;
 
-	if (empty($csub)) {
+	if ($csub === null) {
 		$csub = $sub;
 	}
 
