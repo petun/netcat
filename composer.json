@@ -1,0 +1,7 @@
+{
+    "name": "petun/netcat",
+    "description": "Package helper for netcat CMS",
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
