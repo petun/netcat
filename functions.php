@@ -213,14 +213,15 @@ function p_resize($field, $size_x, $size_y, $crop = 0, $quality = 95) {
 	global $classID;
 	global $DOCUMENT_ROOT;
 
-	p_log('p_resize_call');
+	p_log('p_resize_call on $field=' . $field . ', $classID='.$classID. ', $message=' . $message);
 
 	require_once($nc_core->INCLUDE_FOLDER . "classes/nc_imagetransform.class.php");
 
 	$image_path = $DOCUMENT_ROOT . nc_file_path($classID, $message, $field, "");
 	if ($image_path && $_FILES['f_' . $field]) {
-		p_log('resize images');
+		p_log('start resize images for path '. $image_path);
 		nc_ImageTransform::imgResize($image_path, $image_path, $size_x, $size_y, $crop, 'jpg', $quality, $message, $field);
+        p_log('resize images done');
 	}
 }
 
